@@ -110,6 +110,10 @@ foreach my $p ($gameClientPath, $gameArtsPath)
 system("rm -f kk.zip");
 system("rm -rf " . $kcorePath);
 
+# 复制模板文件
+system("cp " . $Bin . "/../templates/ProtobufTemplate.proto " . $protobufDefinePath . "/");
+system("cp " . $Bin . "/../templates/DesignTemplate.xlsx " . $gameDesignExcelsPath . "/");
+
 # 输出config.yml到工程根目录
 my $projConfigYamlFile = $savePath . "/config.yml";
 if (open("CONF", ">$projConfigYamlFile"))
