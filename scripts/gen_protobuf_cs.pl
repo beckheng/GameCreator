@@ -56,17 +56,15 @@ sub process{
 	
 	print "$PROTOC_CMD -I$protobufDefinePath $filePath -o$outputPath" . "\n";
 	
-	print "开始生成 " . $filePath . " ";
 	$status = system("$PROTOC_CMD -I$protobufDefinePath $filePath -o$outputPath");
 	if ($status){
-		die "protoc生成出错 $!\n";
+		die "protoc鐢熸垚鍑洪敊 $!\n";
 	}
 	
 	my $csPath = $protobufClassesPath . "/" . $_ . ".cs";
-	$status = system($PROTOGEN_CMD, "-i:$outputPath", "-o:$csPath", "-q");
+	print $PROTOGEN_CMD . " -i:$outputPath -o:$csPath -q" . "\n";
+	$status = system($PROTOGEN_CMD . " -i:$outputPath -o:$csPath -q");
 	if ($status){
-		die "生成cs类出错\n";
+		die "鐢熸垚cs绫诲嚭閿橽n";
 	}
-	
-	print "成功\n";
 }
