@@ -2,6 +2,8 @@
 
 use Data::Dumper;
 use YAML qw(LoadFile);
+use File::Path::Tiny;
+use File::Copy;
 
 use strict;
 
@@ -46,9 +48,9 @@ foreach my $p ($savePath, $gameClientPath, $gameDesignPath, $gameArtsPath, $game
 {
 	if (!-e($p))
 	{
-		my $cmd = "mkdir -p " . $p;
+		my $cmd = "mkdir " . $p;
 		print $cmd . "\n";
-		system($cmd);
+		File::Path::Tiny::mk($p);
 	}
 }
 
@@ -56,7 +58,7 @@ foreach my $p ($savePath, $gameClientPath, $gameDesignPath, $gameArtsPath, $game
 my $kcorePath = "KCore";
 if (-e($kcorePath))
 {
-	system("rm -rf " . $kcorePath);
+	File::Path::Tiny::rm($kcorePath);
 }
 my $cloneKCoreCMD = "git clone " . $configHash->{"kcore"};
 print $cloneKCoreCMD . "\n";
@@ -81,9 +83,9 @@ foreach my $p ($gameClientPath, $gameArtsPath)
 {
 	if (!-e($p))
 	{
-		my $cmd = "mkdir -p " . $p;
+		my $cmd = "mkdir " . $p;
 		print $cmd . "\n";
-		system($cmd);
+		File::Path::Tiny::mk($p);
 	}
 	
 	foreach my $subPath (
@@ -93,9 +95,9 @@ foreach my $p ($gameClientPath, $gameArtsPath)
 		"Assets/Resources",
 	)
 	{
-		my $cmd = "mkdir -p " . $p . "/" . $subPath;
+		my $cmd = "mkdir " . $p . "/" . $subPath;
 		print $cmd . "\n";
-		system($cmd);
+		File::Path::Tiny::mk($p . "/" . $subPath);
 	}
 	
 	# link the KCore
@@ -106,15 +108,15 @@ foreach my $p ($gameClientPath, $gameArtsPath)
 		system($unzipKCoreCMD);
 	}
 	
-	system("cp " . $Bin . "/../templates/smcs.rsp " . $p . "/Assets/");
+	copy($Bin . "/../templates/smcs.rsp", $p . "/Assets/");
 }
 
-system("rm -f kk.zip");
-system("rm -rf " . $kcorePath);
+unlink("kk.zip");
+File::Path::Tiny::rm($kcorePath);
 
 # 复制模板文件
-system("cp " . $Bin . "/../templates/ProtobufTemplate.proto " . $protobufDefinePath . "/");
-system("cp " . $Bin . "/../templates/DesignTemplate.xlsx " . $gameDesignExcelsPath . "/");
+copy($Bin . "/../templates/ProtobufTemplate.proto", $protobufDefinePath . "/");
+copy($Bin . "/../templates/DesignTemplate.xlsx", $gameDesignExcelsPath . "/");
 
 # 输出config.yml到工程根目录
 my $projConfigYamlFile = $savePath . "/config.yml";
