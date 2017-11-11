@@ -105,6 +105,8 @@ foreach my $p ($gameClientPath, $gameArtsPath)
 		print $unzipKCoreCMD . "\n";
 		system($unzipKCoreCMD);
 	}
+	
+	system("cp " . $Bin . "/../templates/smcs.rsp " . $p . "/Assets/");
 }
 
 system("rm -f kk.zip");
