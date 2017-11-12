@@ -13,7 +13,9 @@ $|++;
 
 use FindBin qw($Bin);
 
-#use lib ".";
+use lib "$Bin/perlib";
+
+use LogUtil;
 
 # usage : perl gen_protobuf_excel.pl ProjectPath
 
@@ -49,6 +51,8 @@ sub process{
 	
 	my $ss = Spreadsheet::BasicRead->new($filePath);
 	
+	LogUtil::LogDebug($filePath);
+	
 	#生成.proto文件
 	my $protoStr = "syntax = \"proto2\";\n";
 	
@@ -62,7 +66,7 @@ sub process{
 			next;
 		}
 		
-		print $curSheetName . "\n";
+		LogUtil::LogDebug($curSheetName);
 		
 		my $tableComment = "";
 		my @configDefine = ();

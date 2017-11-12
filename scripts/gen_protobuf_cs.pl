@@ -12,7 +12,9 @@ $|++;
 
 use FindBin qw($Bin);
 
-#use lib ".";
+use lib "$Bin/perlib";
+
+use LogUtil;
 
 # usage : perl gen_protobuf_cs.pl ProjectPath
 
@@ -60,7 +62,7 @@ sub process{
 	
 	my $status;
 	
-	print "$PROTOC_CMD -I$fileDir $filePath -o$outputPath" . "\n";
+	LogUtil::LogDebug("$PROTOC_CMD -I$fileDir $filePath -o$outputPath");
 	
 	$status = system("$PROTOC_CMD -I$fileDir $filePath -o$outputPath");
 	if ($status){
@@ -68,7 +70,7 @@ sub process{
 	}
 	
 	my $csPath = $protobufClassesPath . "/" . $_ . ".cs";
-	print $PROTOGEN_CMD . " -i:$outputPath -o:$csPath -q" . "\n";
+	LogUtil::LogDebug($PROTOGEN_CMD . " -i:$outputPath -o:$csPath -q");
 	$status = system($PROTOGEN_CMD . " -i:$outputPath -o:$csPath -q");
 	if ($status){
 		die "生成cs类出错\n";
