@@ -92,6 +92,7 @@ foreach my $p ($gameClientPath, $gameArtsPath)
 	
 	foreach my $subPath (
 		"Assets/Scripts",
+		"Assets/Prefabs/UI",
 		"Assets/Scenes",
 		"Assets/StreamingAssets",
 		"Assets/Resources",
