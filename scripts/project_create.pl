@@ -95,6 +95,10 @@ foreach my $p ($gameClientPath, $gameArtsPath)
 		"Assets/Scenes",
 		"Assets/StreamingAssets",
 		"Assets/Resources",
+		"Assets/Arts/UI",
+		"Assets/Arts/Models",
+		"Assets/Arts/Scenes",
+		"Assets/Arts/Effects",
 	)
 	{
 		my $cmd = "mkdir " . $p . "/" . $subPath;
