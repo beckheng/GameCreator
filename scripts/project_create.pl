@@ -11,7 +11,9 @@ $|++;
 
 use FindBin qw($Bin);
 
-#use lib ".";
+use lib "$Bin/perlib";
+
+use LogUtil;
 
 # usage : perl project_create.pl ProjectPath ProjectName
 
@@ -41,7 +43,7 @@ my $gameDesignExcelsPath = $savePath . "/" . $projName . "_GameDesign/excels";
 
 my $protobufDefinePath = $savePath . "/" . $projName . "_ProtobufDefine";
 
-print "Will Create Project on \"" . $savePath . "\"\n";
+LogUtil::LogDebug("Will Create Project on \"" . $savePath . "\"");
 
 # create sub directories
 foreach my $p ($savePath, $gameClientPath, $gameDesignPath, $gameArtsPath, $gameDesignDocsPath, $gameDesignExcelsPath, $protobufDefinePath)
@@ -49,7 +51,7 @@ foreach my $p ($savePath, $gameClientPath, $gameDesignPath, $gameArtsPath, $game
 	if (!-e($p))
 	{
 		my $cmd = "mkdir " . $p;
-		print $cmd . "\n";
+		LogUtil::LogDebug($cmd);
 		File::Path::Tiny::mk($p);
 	}
 }
@@ -61,7 +63,7 @@ if (-e($kcorePath))
 	File::Path::Tiny::rm($kcorePath);
 }
 my $cloneKCoreCMD = "git clone " . $configHash->{"kcore"};
-print $cloneKCoreCMD . "\n";
+LogUtil::LogDebug($cloneKCoreCMD);
 system($cloneKCoreCMD);
 
 if (!chdir($kcorePath))
@@ -70,7 +72,7 @@ if (!chdir($kcorePath))
 }
 
 my $archiveCmd = "git archive -o ../kk.zip HEAD";
-print $archiveCmd . "\n";
+LogUtil::LogDebug($archiveCmd);
 system($archiveCmd);
 
 if (!chdir(".."))
@@ -84,7 +86,7 @@ foreach my $p ($gameClientPath, $gameArtsPath)
 	if (!-e($p))
 	{
 		my $cmd = "mkdir " . $p;
-		print $cmd . "\n";
+		LogUtil::LogDebug($cmd);
 		File::Path::Tiny::mk($p);
 	}
 	
@@ -96,7 +98,7 @@ foreach my $p ($gameClientPath, $gameArtsPath)
 	)
 	{
 		my $cmd = "mkdir " . $p . "/" . $subPath;
-		print $cmd . "\n";
+		LogUtil::LogDebug($cmd);
 		File::Path::Tiny::mk($p . "/" . $subPath);
 	}
 	
@@ -104,14 +106,17 @@ foreach my $p ($gameClientPath, $gameArtsPath)
 	if (-e("kk.zip"))
 	{
 		my $unzipKCoreCMD = "unzip -o -q kk.zip -d " . $p . "/Assets/Scripts/KCore";
-		print $unzipKCoreCMD . "\n";
+		LogUtil::LogDebug($unzipKCoreCMD);
 		system($unzipKCoreCMD);
 	}
 	
 	copy($Bin . "/../templates/smcs.rsp", $p . "/Assets/");
 }
 
+LogUtil::LogDebug("delete kk.zip");
 unlink("kk.zip");
+
+LogUtil::LogDebug("delete " . $kcorePath);
 File::Path::Tiny::rm($kcorePath);
 
 # 复制模板文件
