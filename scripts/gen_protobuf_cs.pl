@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+# convert .proto to .cs files
+
 use Data::Dumper;
 use YAML qw(LoadFile);
 use File::Find;
@@ -28,6 +30,8 @@ my $PROTOC_CMD = "$Bin/../ProtoGen/protoc";
 my $PROTOGEN_CMD = "$Bin/../ProtoGen/protogen";
 
 my $protobufDefinePath = "$destPath/" . $configHash->{"projectName"} . "_ProtobufDefine";
+my $protobufExcelPath = "$destPath/" . $configHash->{"projectName"} . "_ProtobufExcel";
+
 my $protobufTempPath = "$destPath/" . $configHash->{"projectName"} . "_ProtobufTemp";
 
 if (!-e $protobufTempPath){
@@ -41,9 +45,11 @@ if (!-e $protobufClassesPath){
 }
 
 find({ wanted => \&process, no_chdir => 0}, $protobufDefinePath);
+find({ wanted => \&process, no_chdir => 0}, $protobufExcelPath);
 
 sub process{
 	my $filePath = $File::Find::name;
+	my $fileDir = $File::Find::dir;
 	my $fileName = $_;
 	
 	if (-d $fileName){
@@ -54,9 +60,9 @@ sub process{
 	
 	my $status;
 	
-	print "$PROTOC_CMD -I$protobufDefinePath $filePath -o$outputPath" . "\n";
+	print "$PROTOC_CMD -I$fileDir $filePath -o$outputPath" . "\n";
 	
-	$status = system("$PROTOC_CMD -I$protobufDefinePath $filePath -o$outputPath");
+	$status = system("$PROTOC_CMD -I$fileDir $filePath -o$outputPath");
 	if ($status){
 		die "protoc生成出错 $!\n";
 	}
