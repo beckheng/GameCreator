@@ -98,14 +98,27 @@ sub process{
 				next;
 			}
 			
-			my $colType = $configDefine[1]->[$i];
-			if ($colType =~ /^int$/i)
+			my ($colType, $hasLang);
+			my $colTypeStr = $configDefine[1]->[$i];
+			my @colTypes = split(/\s*;\s*/, $colTypeStr);
+			foreach my $tt (@colTypes)
 			{
-				$colType = "int32";
-			}
-			elsif ($colType =~ /^long$/i)
-			{
-				$colType = "int64";
+				if ($tt =~ /^lang.*/)
+				{
+					$hasLang = 1;
+					next;
+				}
+				
+				$colType = $tt;
+				
+				if ($tt =~ /^int$/i)
+				{
+					$colType = "int32";
+				}
+				elsif ($tt =~ /^long$/i)
+				{
+					$colType = "int64";
+				}
 			}
 			
 			my $colComment = $configDefine[2]->[$i];
