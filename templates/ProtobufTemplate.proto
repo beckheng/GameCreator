@@ -2,6 +2,8 @@ syntax = "proto2";
 
 message ProtobufClass
 {
-    optional int32 id = 1;
-    optional string name = 2;
+	optional int32 id = 1;
+	optional string name = 2;
+	optional int64 exp = 3;
+	optional float factor = 4;
 }
