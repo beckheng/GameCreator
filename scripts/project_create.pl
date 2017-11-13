@@ -125,8 +125,18 @@ LogUtil::LogDebug("delete " . $kcorePath);
 File::Path::Tiny::rm($kcorePath);
 
 # 复制模板文件
+LogUtil::LogDebug("copy " . $Bin . "/../templates/ProtobufTemplate.proto");
 copy($Bin . "/../templates/ProtobufTemplate.proto", $protobufDefinePath . "/");
+
+LogUtil::LogDebug("copy " . $Bin . "/../templates/DesignTemplate.xlsx");
 copy($Bin . "/../templates/DesignTemplate.xlsx", $gameDesignExcelsPath . "/");
+
+if (!-e($gameDesignExcelsPath . "/Messages.xlsx"))
+{
+	LogUtil::LogDebug("copy " . $Bin . "/../templates/Messages.xlsx");
+	copy($Bin . "/../templates/Messages.xlsx", $gameDesignExcelsPath . "/");
+}
+
 
 # 输出config.yml到工程根目录
 my $projConfigYamlFile = $savePath . "/config.yml";
