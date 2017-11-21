@@ -58,6 +58,9 @@ sub process{
 		return;
 	}
 	
+	my $basename = $fileName;
+	$basename =~ s/.proto$//g;
+	
 	my $outputPath = $protobufTempPath . "/" . $fileName . ".bin";
 	
 	my $status;
@@ -69,7 +72,12 @@ sub process{
 		die "protoc生成出错 $!\n";
 	}
 	
-	my $csPath = $protobufClassesPath . "/" . $_ . ".cs";
+	my $csDir = $protobufClassesPath . "/" . $basename;
+	if (!-e $csDir){
+		mkdir($csDir);
+	}
+	
+	my $csPath = $csDir . "/" . $_ . ".cs";
 	LogUtil::LogDebug($PROTOGEN_CMD . " -i:$outputPath -o:$csPath -q");
 	$status = system($PROTOGEN_CMD . " -i:$outputPath -o:$csPath -q");
 	if ($status){
