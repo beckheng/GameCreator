@@ -23,7 +23,7 @@ my ($destPath) = (@ARGV);
 
 if (!$destPath)
 {
-	&usage();
+	die "usage: perl $0 ProjectPath\n";
 }
 
 # load configuration
@@ -66,7 +66,7 @@ sub process{
 			next;
 		}
 		
-		LogUtil::LogDebug($curSheetName);
+		LogUtil::LogDebug("Sheet " . $curSheetName);
 		
 		my $tableComment = "";
 		my @configDefine = ();
