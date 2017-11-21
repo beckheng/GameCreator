@@ -22,7 +22,7 @@ my ($destPath) = (@ARGV);
 
 if (!$destPath)
 {
-	&usage();
+	die "usage: perl $0 ProjectPath\n";
 }
 
 # load configuration
