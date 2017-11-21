@@ -7,5 +7,5 @@ message ProtobufClass
 	optional int64 exp = 3;
 	optional float factor = 4;
 	
-	repeat int32 stats = 5;
+	repeated int32 stats = 5;
 }
