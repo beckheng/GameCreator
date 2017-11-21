@@ -98,6 +98,7 @@ sub process{
 				next;
 			}
 			
+			my $modifier = "optional";
 			my ($colType, $hasLang);
 			my $colTypeStr = $configDefine[1]->[$i];
 			my @colTypes = split(/\s*;\s*/, $colTypeStr);
@@ -107,6 +108,13 @@ sub process{
 				{
 					$hasLang = 1;
 					next;
+				}
+				
+				if ($tt =~ /\[\s*\]$/)
+				{
+					$modifier = "repeated";
+					
+					$tt =~ s/\[\s*\]$//g;
 				}
 				
 				$colType = $tt;
@@ -124,7 +132,7 @@ sub process{
 			my $colComment = $configDefine[2]->[$i];
 			$colComment =~ s/\r?\n/ /smg;
 			
-			$protoStr .= "\toptional " . $colType . " " . $configDefine[0]->[$i] . " = " . ($i + 1) . "; // " . $colComment . "\n";
+			$protoStr .= "\t" . $modifier . " " . $colType . " " . $configDefine[0]->[$i] . " = " . ($i + 1) . "; // " . $colComment . "\n";
 		}
 		$protoStr .= "}\n";
 	}
