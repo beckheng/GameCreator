@@ -93,13 +93,14 @@ sub process{
 			{
 				$tableComment = $data->[0];
 				$tableComment =~ s/\r?\n/ /smg;
+				next;
 			}
 		
 			if (($lineNum >= 2) && ($lineNum <= 4))
 			{
 				push(@configDefine, $data);
 			}
-			else
+			elsif ($lineNum >= 5)
 			{
 				push(@colDatas, $data);
 			}
@@ -157,7 +158,7 @@ sub process{
 			
 			$protoStr .= "\t" . $modifier . " " . $colType . " " . $configDefine[0]->[$i] . " = " . ($i + 1) . "; // " . $colComment . "\n";
 			
-			push(@colDefines, {"name" => $configDefine[0]->[$i], "type" => $colType, "isArray" => $isArray});
+			push(@colDefines, {"name" => $configDefine[0]->[$i], "type" => $colType, "isArray" => $isArray, "index" => $i});
 		}
 		$protoStr .= "}\n";
 		
@@ -165,7 +166,7 @@ sub process{
 		&writeConfigPoolAutoGen($finalClassName, @colDefines);
 		
 		# 生成 StreamAssets/Configs下的json文件
-		&genJSONFile($finalClassName, [@colDefines]);
+		&genJSONFile($finalClassName, [@colDefines], [@colDatas]);
 	}
 	
 	if (open(PROTO, ">:raw :utf8", $protobufExcelPath . "/" . ucfirst($basename) . ".proto"))
@@ -178,6 +179,8 @@ sub process{
 # 生成 StreamAssets/Configs下的json文件
 sub genJSONFile {
 	my $className = shift @_;
+	my @colDefines = @{shift @_};
+	my @colDatas = @{shift @_};
 	
 	my $jsonOutDir = $destPath . "/" . $configHash->{"projectName"} . "_Client/Assets/StreamingAssets/Configs";
 	
@@ -187,12 +190,28 @@ sub genJSONFile {
 	
 	if (open(JSON_AUTO_GEN_OUT, ">$jsonOut"))
 	{
-		print JSON_AUTO_GEN_OUT "";
+		foreach my $rd (@colDatas)
+		{
+			my $hash = {};
+			
+			foreach my $c (@colDefines)
+			{
+				if ($c->{"isArray"})
+				{
+					my @tmpArr = split(";", $rd->[$c->{"index"}]);
+					$hash->{$c->{"name"}} = [@tmpArr];
+				}
+				else
+				{
+					$hash->{$c->{"name"}} = $rd->[$c->{"index"}];
+				}
+			}
+			
+			print JSON_AUTO_GEN_OUT encode_json($hash) . "\n";
+		}
 		
 		close(JSON_AUTO_GEN_OUT);
 	}
-	
-	#encode_json();
 }
 
 # 生成 AutoGen/ConfigPool/下面的文件
