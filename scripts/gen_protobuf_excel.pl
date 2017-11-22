@@ -40,6 +40,9 @@ if (!-e $protobufExcelPath){
 
 my @allConfigs = ();
 
+my $json = JSON::XS->new->pretty(0)->allow_nonref;
+$json->canonical(1);
+
 find({ wanted => \&process, no_chdir => 0}, $gameDesignExcelsPath);
 
 # 生成 AutoGen/ConfigLoaderAutoGen.cs
@@ -188,7 +191,7 @@ sub genJSONFile {
 	
 	my $jsonOut = $jsonOutDir . "/" .$className . ".json";
 	
-	if (open(JSON_AUTO_GEN_OUT, ">$jsonOut"))
+	if (open(JSON_AUTO_GEN_OUT, ">:utf8", $jsonOut))
 	{
 		foreach my $rd (@colDatas)
 		{
@@ -207,7 +210,7 @@ sub genJSONFile {
 				}
 			}
 			
-			print JSON_AUTO_GEN_OUT encode_json($hash) . "\n";
+			print JSON_AUTO_GEN_OUT $json->encode($hash) . "\n";
 		}
 		
 		close(JSON_AUTO_GEN_OUT);
