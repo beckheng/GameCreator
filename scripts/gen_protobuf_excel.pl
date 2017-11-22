@@ -80,7 +80,7 @@ sub process{
 		LogUtil::LogDebug("Sheet " . $curSheetName);
 		
 		my $tableComment = "";
-		my @configDefine = ();
+		my @configDefine = (); # 行定义
 		
 		my $lineNum = 0;
 		while ((my $data = $ss->getNextRow()))
@@ -102,6 +102,8 @@ sub process{
 		my $finalClassName = ucfirst($basename) .  ucfirst($curSheetName);
 		push(@allConfigs, $finalClassName);
 		
+		my @colDefines = (); # 列定义
+		
 		$protoStr .= "\n// " . $tableComment . "\n";
 		$protoStr .= "message " . $finalClassName . "Config" . "\n{\n";
 		my $colsNum = scalar(@{$configDefine[0]});
@@ -113,7 +115,7 @@ sub process{
 			}
 			
 			my $modifier = "optional";
-			my ($colType, $hasLang);
+			my ($colType, $hasLang, $isArray);
 			my $colTypeStr = $configDefine[1]->[$i];
 			my @colTypes = split(/\s*;\s*/, $colTypeStr);
 			foreach my $tt (@colTypes)
@@ -127,6 +129,7 @@ sub process{
 				if ($tt =~ /\[\s*\]$/)
 				{
 					$modifier = "repeated";
+					$isArray = 1;
 					
 					$tt =~ s/\[\s*\]$//g;
 				}
@@ -147,10 +150,13 @@ sub process{
 			$colComment =~ s/\r?\n/ /smg;
 			
 			$protoStr .= "\t" . $modifier . " " . $colType . " " . $configDefine[0]->[$i] . " = " . ($i + 1) . "; // " . $colComment . "\n";
+			
+			push(@colDefines, {"name" => $configDefine[0]->[$i], "type" => $colType, "isArray" => $isArray});
 		}
 		$protoStr .= "}\n";
 		
 		# 生成 AutoGen/ConfigPool/下面的文件
+		&writeConfigPoolAutoGen($finalClassName, @colDefines);
 		
 		# 生成 StreamAssets/Configs下的json文件
 	}
@@ -159,6 +165,87 @@ sub process{
 	{
 		print PROTO $protoStr . "\n";
 		close(PROTO);
+	}
+}
+
+# 生成 AutoGen/ConfigPool/下面的文件
+sub writeConfigPoolAutoGen {
+	my $className = shift @_;
+	my @colDefines = @_;
+	
+	my $autoGenIn = $Bin . "/../templates/ConfigPool.cs.tmpl";
+	my $configPoolAutoGenOutDir = $destPath . "/" . $configHash->{"projectName"} . "_Client/Assets/Scripts/AutoGen/ConfigPool";
+	
+	File::Path::Tiny::mk($configPoolAutoGenOutDir);
+	
+	if (open(CONFIG_POOL_AUTO_GEN_IN, $autoGenIn))
+	{
+		my $autoGenOut = $configPoolAutoGenOutDir . "/" . $className . "ConfigPool.cs";
+		if (open(CONFIG_POOL_AUTO_GEN_OUT, ">$autoGenOut"))
+		{
+		
+			my $keyType = "string";
+			if ($colDefines[0]->{"type"} eq "int32")
+			{
+				$keyType = "int";
+			}
+			elsif ($colDefines[0]->{"type"} eq "int64")
+			{
+				$keyType = "long";
+			}
+			elsif ($colDefines[0]->{"type"} eq "float")
+			{
+				$keyType = "float";
+			}
+			
+			my $assignStr = "";
+			foreach my $c (@colDefines)
+			{
+				my $getValStatement = "Value";
+				if ($c->{"type"} eq "int32")
+				{
+					$keyType = "int";
+					$getValStatement = "AsInt";
+				}
+				elsif ($c->{"type"} eq "int64")
+				{
+					$keyType = "long";
+					$getValStatement = "AsInt";
+				}
+				elsif ($c->{"type"} eq "float")
+				{
+					$keyType = "float";
+					$getValStatement = "AsFloat";
+				}
+				
+				if ($c->{"isArray"})
+				{
+					$assignStr .= "\n					var tmp_" . $c->{"name"} . " = jsonObject[\"" . $c->{"name"} . "\"].AsArray;";
+					$assignStr .= "\n					for (int i = 0; i < tmp_" . $c->{"name"} . ".Count; i++)";
+					$assignStr .= "\n					{";
+					$assignStr .= "\n						config." . $c->{"name"} . ".Add(tmp_" . $c->{"name"} . "[i]." . $getValStatement . ");";
+					$assignStr .= "\n					}";
+				}
+				else
+				{
+					$assignStr .= "\n					config." . $c->{"name"} . " = jsonObject[\"" . $c->{"name"} . "\"]." . $getValStatement . ";";
+				}
+			}
+			
+			while (my $line = <CONFIG_POOL_AUTO_GEN_IN>)
+			{
+				$line =~ s!//CLASS_NAME//!$className!g;
+				$line =~ s!//KEY_NAME//!$colDefines[0]->{"name"}!g;
+				$line =~ s!//FIELD_ASSIGN_STATEMENT//!$assignStr!g;
+				$line =~ s!//KEY_TYPE//!$keyType!g;
+				
+				print CONFIG_POOL_AUTO_GEN_OUT $line;
+			}
+			
+			close(CONFIG_POOL_AUTO_GEN_OUT);
+		}
+		
+		close(CONFIG_POOL_AUTO_GEN_IN);
 	}
 }
 
@@ -198,8 +285,4 @@ sub writeConfigLoaderAutoGen{
 		
 		close(LOADER_AUTO_GEN_IN);
 	}
-	
-	my $protobufClassesPath = $destPath . "/" . $configHash->{"projectName"} . "_Client/Assets/Scripts/ProtobufClasses";
-	
-
 }
