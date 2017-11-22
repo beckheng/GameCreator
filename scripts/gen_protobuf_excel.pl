@@ -7,6 +7,7 @@ use YAML qw(LoadFile);
 use File::Find;
 use Spreadsheet::BasicRead;
 use File::Path::Tiny;
+use JSON::XS;
 
 use strict;
 
@@ -81,6 +82,7 @@ sub process{
 		
 		my $tableComment = "";
 		my @configDefine = (); # 行定义
+		my @colDatas = (); # 行数据
 		
 		my $lineNum = 0;
 		while ((my $data = $ss->getNextRow()))
@@ -96,6 +98,10 @@ sub process{
 			if (($lineNum >= 2) && ($lineNum <= 4))
 			{
 				push(@configDefine, $data);
+			}
+			else
+			{
+				push(@colDatas, $data);
 			}
 		}
 		
@@ -159,6 +165,7 @@ sub process{
 		&writeConfigPoolAutoGen($finalClassName, @colDefines);
 		
 		# 生成 StreamAssets/Configs下的json文件
+		&genJSONFile($finalClassName, [@colDefines]);
 	}
 	
 	if (open(PROTO, ">:raw :utf8", $protobufExcelPath . "/" . ucfirst($basename) . ".proto"))
@@ -166,6 +173,26 @@ sub process{
 		print PROTO $protoStr . "\n";
 		close(PROTO);
 	}
+}
+
+# 生成 StreamAssets/Configs下的json文件
+sub genJSONFile {
+	my $className = shift @_;
+	
+	my $jsonOutDir = $destPath . "/" . $configHash->{"projectName"} . "_Client/Assets/StreamingAssets/Configs";
+	
+	File::Path::Tiny::mk($jsonOutDir);
+	
+	my $jsonOut = $jsonOutDir . "/" .$className . ".json";
+	
+	if (open(JSON_AUTO_GEN_OUT, ">$jsonOut"))
+	{
+		print JSON_AUTO_GEN_OUT "";
+		
+		close(JSON_AUTO_GEN_OUT);
+	}
+	
+	#encode_json();
 }
 
 # 生成 AutoGen/ConfigPool/下面的文件
