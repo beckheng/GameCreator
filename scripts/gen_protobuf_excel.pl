@@ -292,6 +292,14 @@ sub writeConfigLoaderAutoGen{
 			my $outStr = "";
 			foreach my $c (@allConfigs)
 			{
+				if ( ($c eq "MessagesMsg")
+					|| ($c eq "MessagesMsgEN") 
+					|| ($c eq "MessagesMsgTC") 
+					|| ($c eq "MessagesMsgSC") 
+				)
+				{
+					next;
+				}
 				$outStr .= "\n			yield return " . $c . "ConfigPool.LoadData(\"file://\" + Application.streamingAssetsPath + \"/Configs/" . $c . ".json\");";
 			}
 			
