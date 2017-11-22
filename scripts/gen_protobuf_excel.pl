@@ -6,6 +6,7 @@ use Data::Dumper;
 use YAML qw(LoadFile);
 use File::Find;
 use Spreadsheet::BasicRead;
+use File::Path::Tiny;
 
 use strict;
 
@@ -36,7 +37,12 @@ if (!-e $protobufExcelPath){
 	mkdir($protobufExcelPath);
 }
 
+my @allConfigs = ();
+
 find({ wanted => \&process, no_chdir => 0}, $gameDesignExcelsPath);
+
+# 生成 AutoGen/ConfigLoaderAutoGen.cs
+&writeConfigLoaderAutoGen();
 
 sub process{
 	my $filePath = $File::Find::name;
@@ -48,6 +54,11 @@ sub process{
 	
 	my $basename = $fileName;
 	$basename =~ s/.xlsx//;
+	
+	if ($basename =~ /^~/)
+	{
+		return;
+	}
 	
 	my $ss = Spreadsheet::BasicRead->new($filePath);
 	
@@ -88,8 +99,11 @@ sub process{
 			}
 		}
 		
+		my $finalClassName = ucfirst($basename) .  ucfirst($curSheetName);
+		push(@allConfigs, $finalClassName);
+		
 		$protoStr .= "\n// " . $tableComment . "\n";
-		$protoStr .= "message " . ucfirst($basename) .  ucfirst($curSheetName) . "Config" . "\n{\n";
+		$protoStr .= "message " . $finalClassName . "Config" . "\n{\n";
 		my $colsNum = scalar(@{$configDefine[0]});
 		for (my $i = 0; $i < $colsNum; $i++)
 		{
@@ -135,6 +149,10 @@ sub process{
 			$protoStr .= "\t" . $modifier . " " . $colType . " " . $configDefine[0]->[$i] . " = " . ($i + 1) . "; // " . $colComment . "\n";
 		}
 		$protoStr .= "}\n";
+		
+		# 生成 AutoGen/ConfigPool/下面的文件
+		
+		# 生成 StreamAssets/Configs下的json文件
 	}
 	
 	if (open(PROTO, ">:raw :utf8", $protobufExcelPath . "/" . ucfirst($basename) . ".proto"))
@@ -142,4 +160,46 @@ sub process{
 		print PROTO $protoStr . "\n";
 		close(PROTO);
 	}
+}
+
+# 生成 AutoGen/ConfigLoaderAutoGen.cs
+sub writeConfigLoaderAutoGen{
+	my $autoGenIn = $Bin . "/../templates/ConfigLoaderAutoGen.cs.tmpl";
+	my $loaderAutoGenOutDir = $destPath . "/" . $configHash->{"projectName"} . "_Client/Assets/Scripts/AutoGen";
+	
+	File::Path::Tiny::mk($loaderAutoGenOutDir);
+	
+	if (open(LOADER_AUTO_GEN_IN, $autoGenIn))
+	{
+		my $autoGenOut = $loaderAutoGenOutDir . "/ConfigLoaderAutoGen.cs";
+		if (open(LOADER_AUTO_GEN_OUT, ">$autoGenOut"))
+		{
+		
+			my $outStr = "";
+			foreach my $c (@allConfigs)
+			{
+				$outStr .= "\n			yield return " . $c . "ConfigPool.LoadData(\"file://\" + Application.streamingAssetsPath + \"/Configs/" . $c . ".json\");";
+			}
+			
+			while (my $line = <LOADER_AUTO_GEN_IN>)
+			{
+				if ($line =~ m!//CONFIG_POOL_STATEMENT//!)
+				{
+					print LOADER_AUTO_GEN_OUT $outStr . "\n";
+				}
+				else
+				{
+					print LOADER_AUTO_GEN_OUT $line;
+				}
+			}
+			
+			close(LOADER_AUTO_GEN_OUT);
+		}
+		
+		close(LOADER_AUTO_GEN_IN);
+	}
+	
+	my $protobufClassesPath = $destPath . "/" . $configHash->{"projectName"} . "_Client/Assets/Scripts/ProtobufClasses";
+	
+
 }
