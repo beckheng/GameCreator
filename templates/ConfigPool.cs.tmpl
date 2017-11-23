@@ -13,54 +13,9 @@ namespace KData
 		
 		private static List<//CLASS_NAME//Config> dataList = new List<//CLASS_NAME//Config>();
 
-		public static IEnumerator LoadData(string jsonFilePath)
-		{
-			string url = jsonFilePath;
-			Debug.Log("//CLASS_NAME//ConfigPool|url|" + url);
-
-			using (WWW w = new WWW(url))
-			{
-				yield return w;
-				
-				if (w.error != null)
-				{
-					Debug.LogError("//CLASS_NAME//ConfigPool|www|error|" + w.error);
-					yield break;
-				}
-
-				string content = w.text;
-				Debug.Log("//CLASS_NAME//ConfigPool|content|" + content);
-				
-				List<//CLASS_NAME//Config> tmpList = new List<//CLASS_NAME//Config>();
-				string[] allLines = content.Replace("\r", "").Split(new char[] { '\n' });
-				Debug.Log("allLines|" + allLines.Length);
-				for (int l = 0; l < allLines.Length; l++)
-				{
-					if (allLines[l].Trim().Length == 0)
-					{
-						continue;
-					}
-
-					JSONNode jsonObject = JSON.Parse(allLines[l]);
-					
-					//CLASS_NAME//Config config = new //CLASS_NAME//Config();
-					//FIELD_ASSIGN_STATEMENT//
-					
-					tmpList.Add(config);
-				}
-
-				dataList.Clear();
-				dataList = tmpList;
-				
-				AssetBundle ab = w.assetBundle;
-				if (ab != null)
-				{
-					//确保不会异常
-					ab.Unload(true);
-				}
-			};
-		}
-
+		/// <summary>
+		/// 按主键读取
+		/// </summary>
 		public static //CLASS_NAME//Config GetByKey(//KEY_TYPE// key)
 		{
 			for (int i = 0; i < dataList.Count; i++)
@@ -74,9 +29,67 @@ namespace KData
 			return null;
 		}
 
+		/// <summary>
+		/// 配置表所有数据
+		/// </summary>
 		public static List<//CLASS_NAME//Config> GetList()
 		{
 			return dataList;
+		}
+		
+		/// <summary>
+		/// 从AB加载配置表
+		/// </summary>
+		public static IEnumerator LoadData(string jsonFilePath)
+		{
+			yield return KAssetBundle.LoadFromStreamAssets(jsonFilePath, OnLoadDataSucc, OnLoadDataError);
+		}
+		
+		/// <summary>
+		/// 配置表加载成功的回调
+		/// </summary>
+		private static void OnLoadDataSucc(WWW w)
+		{
+			Debug.Log("//CLASS_NAME//ConfigPool|url|" + w.url);
+
+			string content = w.text;
+			Debug.Log("//CLASS_NAME//ConfigPool|content|" + content);
+			
+			List<//CLASS_NAME//Config> tmpList = new List<//CLASS_NAME//Config>();
+			string[] allLines = content.Replace("\r", "").Split(new char[] { '\n' });
+			Debug.Log("allLines|" + allLines.Length);
+			for (int l = 0; l < allLines.Length; l++)
+			{
+				if (allLines[l].Trim().Length == 0)
+				{
+					continue;
+				}
+
+				JSONNode jsonObject = JSON.Parse(allLines[l]);
+				
+				//CLASS_NAME//Config config = new //CLASS_NAME//Config();
+				//FIELD_ASSIGN_STATEMENT//
+				
+				tmpList.Add(config);
+			}
+
+			dataList.Clear();
+			dataList = tmpList;
+			
+			AssetBundle ab = w.assetBundle;
+			if (ab != null)
+			{
+				//确保不会异常
+				ab.Unload(true);
+			}
+		}
+		
+		/// <summary>
+		/// 配置表加载失败的回调
+		/// </summary>
+		private static void OnLoadDataError(WWW w)
+		{
+			Debug.LogError("//CLASS_NAME//ConfigPool|error|" + w.url);
 		}
 		
 	}
