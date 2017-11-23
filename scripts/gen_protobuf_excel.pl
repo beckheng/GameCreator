@@ -322,7 +322,7 @@ sub writeConfigLoaderAutoGen{
 				{
 					next;
 				}
-				$outStr .= "\n			yield return " . $c . "ConfigPool.LoadData(\"file://\" + Application.streamingAssetsPath + \"/Configs/" . $c . ".json\");";
+				$outStr .= "\n			yield return " . $c . "ConfigPool.LoadData(\"/Configs/" . $c . ".json\");";
 			}
 			
 			while (my $line = <LOADER_AUTO_GEN_IN>)
