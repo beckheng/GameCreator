@@ -144,6 +144,7 @@ if (open("CONF", ">$projConfigYamlFile"))
 {
 	print CONF "---\n";
 	print CONF "projectName: " . $projName . "\n";
+	print CONF "CreatorPath: " . $Bin . "\n";
 	close(CONF);
 }
 
