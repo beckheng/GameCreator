@@ -84,7 +84,9 @@ sub process{
 		LogUtil::LogDebug("Sheet " . $curSheetName);
 		
 		my $tableComment = "";
-		my @configDefine = (); # 行定义
+		my @fieldCommentDefine = (); # 字段注释声明
+		my @fieldTypeDefine = (); # 字段类型声明
+		my @fieldNameDefine = (); # 字段名称声明
 		my @colDatas = (); # 行数据
 		
 		my $lineNum = 0;
@@ -98,12 +100,26 @@ sub process{
 				$tableComment =~ s/\r?\n/ /smg;
 				next;
 			}
-		
-			if (($lineNum >= 2) && ($lineNum <= 4))
+			
+			if (2 == $lineNum)
 			{
-				push(@configDefine, $data);
+				@fieldCommentDefine = @{$data};
+				next;
 			}
-			elsif ($lineNum >= 5)
+			
+			if (3 == $lineNum)
+			{
+				@fieldTypeDefine = @{$data};
+				next;
+			}
+		
+			if (4 == $lineNum)
+			{
+				@fieldNameDefine = @{$data};
+				next;
+			}
+			
+			if ($lineNum >= 5)
 			{
 				push(@colDatas, $data);
 			}
@@ -116,17 +132,17 @@ sub process{
 		
 		$protoStr .= "\n// " . $tableComment . "\n";
 		$protoStr .= "message " . $finalClassName . "Config" . "\n{\n";
-		my $colsNum = scalar(@{$configDefine[0]});
-		for (my $i = 0; $i < $colsNum; $i++)
+		my $colsNum = scalar(@fieldNameDefine);
+		for (my $i = 1; $i < $colsNum; $i++)
 		{
-			if ($configDefine[0]->[$i] =~ /^#/)
+			if ($fieldNameDefine[$i] =~ /^#/)
 			{
 				next;
 			}
 			
 			my $modifier = "optional";
 			my ($colType, $hasLang, $isArray);
-			my $colTypeStr = $configDefine[1]->[$i];
+			my $colTypeStr = $fieldTypeDefine[$i];
 			my @colTypes = split(/\s*;\s*/, $colTypeStr);
 			foreach my $tt (@colTypes)
 			{
@@ -156,12 +172,12 @@ sub process{
 				}
 			}
 			
-			my $colComment = $configDefine[2]->[$i];
+			my $colComment = $fieldCommentDefine[$i];
 			$colComment =~ s/\r?\n/ /smg;
 			
-			$protoStr .= "\t" . $modifier . " " . $colType . " " . $configDefine[0]->[$i] . " = " . ($i + 1) . "; // " . $colComment . "\n";
+			$protoStr .= "\t" . $modifier . " " . $colType . " " . $fieldNameDefine[$i] . " = " . ($i) . "; // " . $colComment . "\n";
 			
-			push(@colDefines, {"name" => $configDefine[0]->[$i], "type" => $colType, "isArray" => $isArray, "index" => $i});
+			push(@colDefines, {"name" => $fieldNameDefine[$i], "type" => $colType, "isArray" => $isArray, "index" => $i});
 		}
 		$protoStr .= "}\n";
 		
