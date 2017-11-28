@@ -147,6 +147,10 @@ if (open("CONF", ">$projConfigYamlFile"))
 	close(CONF);
 }
 
+# 总是生成一次EXCEL及CS生成
+system($Bin . "/gen_protobuf_excel.pl " . $savePath);
+system($Bin . "/gen_protobuf_cs.pl " . $savePath);
+
 sub usage
 {
 	die "perl $0 ProjectPath ProjectName\n";
