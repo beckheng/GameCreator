@@ -35,7 +35,6 @@ if (!$projName)
 $projName = ucfirst($projName);
 my $savePath = $destPath . "/" . $projName;
 my $gameClientPath = $savePath . "/" . $projName . "_Client";
-my $gameArtsPath = $savePath . "/" . $projName . "_Arts";
 
 my $gameDesignPath = $savePath . "/" . $projName . "_GameDesign";
 my $gameDesignDocsPath = $savePath . "/" . $projName . "_GameDesign/docs";
@@ -46,7 +45,7 @@ my $protobufDefinePath = $savePath . "/" . $projName . "_ProtobufDefine";
 LogUtil::LogDebug("Will Create Project on \"" . $savePath . "\"");
 
 # create sub directories
-foreach my $p ($savePath, $gameClientPath, $gameDesignPath, $gameArtsPath, $gameDesignDocsPath, $gameDesignExcelsPath, $protobufDefinePath)
+foreach my $p ($savePath, $gameClientPath, $gameDesignPath, $gameDesignDocsPath, $gameDesignExcelsPath, $protobufDefinePath)
 {
 	if (!-e($p))
 	{
@@ -81,7 +80,7 @@ if (!chdir(".."))
 }
 
 # create Unity sub directories
-foreach my $p ($gameClientPath, $gameArtsPath)
+foreach my $p ($gameClientPath)
 {
 	if (!-e($p))
 	{
