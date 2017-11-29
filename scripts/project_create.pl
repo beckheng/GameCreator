@@ -99,6 +99,7 @@ foreach my $p ($gameClientPath)
 		"Assets/Arts/Models",
 		"Assets/Arts/Scenes",
 		"Assets/Arts/Effects",
+		"Assets/Arts/Sounds",
 	)
 	{
 		my $cmd = "mkdir " . $p . "/" . $subPath;
