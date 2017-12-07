@@ -101,6 +101,7 @@ foreach my $p ($gameClientPath)
 		"Assets/Resources",
 		"Assets/Scenes",
 		"Assets/Scripts",
+		"Assets/Scripts/KScene",
 		"Assets/StreamingAssets",
 	)
 	{
@@ -137,6 +138,12 @@ if (!-e($gameDesignExcelsPath . "/Messages.xlsx"))
 {
 	LogUtil::LogDebug("copy " . $Bin . "/../templates/Messages.xlsx");
 	copy($Bin . "/../templates/Messages.xlsx", $gameDesignExcelsPath . "/");
+}
+
+if (!-e($gameClientPath . "/Assets/Scripts/KScene/KSceneHook.cs"))
+{
+	LogUtil::LogDebug("copy " . $Bin . "/../templates/KSceneHook.cs");
+	copy($Bin . "/../templates/KSceneHook.cs", $gameClientPath . "/Assets/Scripts/KScene/");
 }
 
 
