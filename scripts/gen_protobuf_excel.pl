@@ -269,17 +269,14 @@ sub writeConfigPoolAutoGen {
 				my $getValStatement = "Value";
 				if ($c->{"type"} eq "int32")
 				{
-					$keyType = "int";
 					$getValStatement = "AsInt";
 				}
 				elsif ($c->{"type"} eq "int64")
 				{
-					$keyType = "long";
 					$getValStatement = "AsInt";
 				}
 				elsif ($c->{"type"} eq "float")
 				{
-					$keyType = "float";
 					$getValStatement = "AsFloat";
 				}
 				
