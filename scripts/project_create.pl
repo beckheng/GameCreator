@@ -108,6 +108,7 @@ foreach my $p ($gameClientPath)
 		"Assets/Prefabs/View",
 		"Assets/Resources",
 		"Assets/Scenes",
+		"Assets/Scripts",
 		"Assets/Plugins",
 		"Assets/Plugins/KScene",
 		"Assets/StreamingAssets",
