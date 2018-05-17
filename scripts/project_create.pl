@@ -18,7 +18,15 @@ use LogUtil;
 # usage : perl project_create.pl ProjectPath ProjectName
 
 # load configuration
-my $configHash = LoadFile($Bin . "/config.yml");
+my $localConfigPath = $Bin . "/config.local.yml";
+my $configYAMLPath = $Bin . "/config.yml";
+if (-e($localConfigPath))
+{
+	LogUtil::LogDebug("use config local yml: " . $localConfigPath);
+	$configYAMLPath = $Bin . "/config.local.yml";
+}
+
+my $configHash = LoadFile($configYAMLPath);
 
 my ($destPath, $projName) = (@ARGV);
 
