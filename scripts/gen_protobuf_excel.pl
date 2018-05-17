@@ -239,7 +239,7 @@ sub writeConfigPoolAutoGen {
 	my @colDefines = @_;
 	
 	my $autoGenIn = $Bin . "/../templates/ConfigPool.cs.tmpl";
-	my $configPoolAutoGenOutDir = $destPath . "/" . $configHash->{"projectName"} . "_Client/Assets/Scripts/AutoGen/ConfigPool";
+	my $configPoolAutoGenOutDir = $destPath . "/" . $configHash->{"projectName"} . "_Client/Assets/Plugins/AutoGen/ConfigPool";
 	
 	File::Path::Tiny::mk($configPoolAutoGenOutDir);
 	
@@ -314,7 +314,7 @@ sub writeConfigPoolAutoGen {
 # 生成 AutoGen/ConfigLoaderAutoGen.cs
 sub writeConfigLoaderAutoGen{
 	my $autoGenIn = $Bin . "/../templates/ConfigLoaderAutoGen.cs.tmpl";
-	my $loaderAutoGenOutDir = $destPath . "/" . $configHash->{"projectName"} . "_Client/Assets/Scripts/AutoGen";
+	my $loaderAutoGenOutDir = $destPath . "/" . $configHash->{"projectName"} . "_Client/Assets/Plugins/AutoGen";
 	
 	File::Path::Tiny::mk($loaderAutoGenOutDir);
 	

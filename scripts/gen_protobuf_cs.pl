@@ -40,7 +40,7 @@ if (!-e $protobufTempPath){
 	mkdir($protobufTempPath);
 }
 
-my $protobufClassesPath = "$destPath/" . $configHash->{"projectName"} . "_Client/Assets/Scripts/ProtobufClasses";
+my $protobufClassesPath = "$destPath/" . $configHash->{"projectName"} . "_Client/Assets/Plugins/ProtobufClasses";
 
 if (!-e $protobufClassesPath){
 	mkdir($protobufClassesPath);
