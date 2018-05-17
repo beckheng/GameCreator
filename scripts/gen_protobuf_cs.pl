@@ -5,6 +5,7 @@
 use Data::Dumper;
 use YAML qw(LoadFile);
 use File::Find;
+use File::Path qw(make_path);
 
 use strict;
 
@@ -32,18 +33,18 @@ my $PROTOC_CMD = "$Bin/../ProtoGen/protoc";
 my $PROTOGEN_CMD = "$Bin/../ProtoGen/protogen";
 
 my $protobufDefinePath = "$destPath/" . $configHash->{"projectName"} . "_ProtobufDefine";
-my $protobufExcelPath = "$destPath/" . $configHash->{"projectName"} . "_ProtobufExcel";
+my $protobufExcelPath = "$destPath/" . $configHash->{"projectName"} . "_tmp/ProtobufExcel";
 
-my $protobufTempPath = "$destPath/" . $configHash->{"projectName"} . "_ProtobufTemp";
+my $protobufTempPath = "$destPath/" . $configHash->{"projectName"} . "_tmp/ProtobufTemp";
 
 if (!-e $protobufTempPath){
-	mkdir($protobufTempPath);
+	make_path($protobufTempPath);
 }
 
 my $protobufClassesPath = "$destPath/" . $configHash->{"projectName"} . "_Client/Assets/Plugins/ProtobufClasses";
 
 if (!-e $protobufClassesPath){
-	mkdir($protobufClassesPath);
+	make_path($protobufClassesPath);
 }
 
 find({ wanted => \&process, no_chdir => 0}, $protobufDefinePath);

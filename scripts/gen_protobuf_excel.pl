@@ -8,6 +8,7 @@ use File::Find;
 use Spreadsheet::BasicRead;
 use File::Path::Tiny;
 use JSON::XS;
+use File::Path qw(make_path);
 
 use strict;
 
@@ -32,10 +33,10 @@ if (!$destPath)
 my $configHash = LoadFile($destPath . "/config.yml");
 
 my $gameDesignExcelsPath = $destPath . "/" . $configHash->{"projectName"} . "_GameDesign/excels";
-my $protobufExcelPath = "$destPath/" . $configHash->{"projectName"} . "_ProtobufExcel";
+my $protobufExcelPath = "$destPath/" . $configHash->{"projectName"} . "_tmp/ProtobufExcel";
 
 if (!-e $protobufExcelPath){
-	mkdir($protobufExcelPath);
+	make_path($protobufExcelPath);
 }
 
 my @allConfigs = ();
