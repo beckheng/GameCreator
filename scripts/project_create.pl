@@ -104,13 +104,15 @@ foreach my $p ($gameClientPath)
 		"Assets/Arts/Sounds",
 		"Assets/Arts/Sounds/bg",
 		"Assets/Arts/UI",
+		"Assets/Plugins/Android",
+		"Assets/Plugins/iOS",
 		"Assets/Prefabs/Models",
 		"Assets/Prefabs/View",
 		"Assets/Resources",
 		"Assets/Scenes",
 		"Assets/Scripts",
-		"Assets/Plugins",
-		"Assets/Plugins/KScene",
+		"Assets/Standard Assets",
+		"Assets/Standard Assets/KScene",
 		"Assets/StreamingAssets",
 	)
 	{
@@ -122,9 +124,9 @@ foreach my $p ($gameClientPath)
 	# link the KCore
 	if (-e("kk.zip"))
 	{
-		my $unzipKCoreCMD = "unzip -o -q kk.zip -d " . $p . "/Assets/Plugins/KCore";
-		LogUtil::LogDebug($unzipKCoreCMD);
-		system($unzipKCoreCMD);
+		my @unzipKCoreCMD = ("unzip", "-o", "-q", "kk.zip", "-d", $p . "/Assets/Standard Assets/KCore");
+		LogUtil::LogDebug("@unzipKCoreCMD");
+		system(@unzipKCoreCMD);
 	}
 	
 	copy($Bin . "/../templates/smcs.rsp", $p . "/Assets/");
@@ -149,10 +151,10 @@ if (!-e($gameDesignExcelsPath . "/Messages.xlsx"))
 	copy($Bin . "/../templates/Messages.xlsx", $gameDesignExcelsPath . "/");
 }
 
-if (!-e($gameClientPath . "/Assets/Plugins/KScene/KSceneHook.cs"))
+if (!-e($gameClientPath . "/Assets/Standard Assets/KScene/KSceneHook.cs"))
 {
 	LogUtil::LogDebug("copy " . $Bin . "/../templates/KSceneHook.cs");
-	copy($Bin . "/../templates/KSceneHook.cs", $gameClientPath . "/Assets/Plugins/KScene/");
+	copy($Bin . "/../templates/KSceneHook.cs", $gameClientPath . "/Assets/Standard Assets/KScene/");
 }
 
 

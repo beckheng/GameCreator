@@ -41,7 +41,7 @@ if (!-e $protobufTempPath){
 	make_path($protobufTempPath);
 }
 
-my $protobufClassesPath = "$destPath/" . $configHash->{"projectName"} . "_Client/Assets/Plugins/ProtobufClasses";
+my $protobufClassesPath = "$destPath/" . $configHash->{"projectName"} . "_Client/Assets/Standard Assets/ProtobufClasses";
 
 if (!-e $protobufClassesPath){
 	make_path($protobufClassesPath);
@@ -80,7 +80,7 @@ sub process{
 	
 	my $csPath = $csDir . "/" . $_ . ".cs";
 	LogUtil::LogDebug($PROTOGEN_CMD . " -i:$outputPath -o:$csPath -q -ns:KData");
-	$status = system($PROTOGEN_CMD . " -i:$outputPath -o:$csPath -q -ns:KData");
+	$status = system($PROTOGEN_CMD . " -i:$outputPath -o:\"$csPath\" -q -ns:KData");
 	if ($status){
 		die "生成cs类出错\n";
 	}
@@ -116,7 +116,7 @@ sub processExcel{
 
 	my $csPath = $csDir . "/" . $_ . ".cs";
 	LogUtil::LogDebug($PROTOGEN_CMD . " -i:$outputPath -o:$csPath -q -ns:KData");
-	$status = system($PROTOGEN_CMD . " -i:$outputPath -o:$csPath -q -ns:KData");
+	$status = system($PROTOGEN_CMD . " -i:$outputPath -o:\"$csPath\" -q -ns:KData");
 	if ($status){
 		die "生成cs类出错\n";
 	}
