@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!perl
 
 use Data::Dumper;
 use YAML qw(LoadFile);

@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!perl
 
 # convert .proto to .cs files
 
