@@ -12,7 +12,9 @@
 
 5. 将GameCreator的绝对路径添加到环境变态PATH
 
-6. $ create_unity_project.pl "D:\MyDemo" BBTowerDefense
+6. 创建一个项目,注意使用绝对路径
+
+    $ create_unity_project.pl "D:\MyDemo" BBTowerDefense
 
 7. 使用Unity打开工程: D:\MyDemo\BBTowerDefense\BBTowerDefense_Client
 
