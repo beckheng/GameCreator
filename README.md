@@ -2,7 +2,7 @@
 
 ## 如何使用
 
-1. 安装Strawberry Perl(Windows平台需要)
+1. 安装Strawberry Perl(Windows平台需要),.pl文件用Perl来打开(运行)
 
 2. 安装git (windows下安装git)
 
